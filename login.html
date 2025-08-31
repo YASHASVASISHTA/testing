@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ExamAce</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            /* Enhanced background */
+            background: linear-gradient(135deg, #e0f2f1 0%, #f0fdf4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Color variables */
+        :root {
+            --primary: #15803d;
+            --primary-foreground: #ffffff;
+            --secondary: #84cc16;
+            --card: #ffffff;
+            --foreground: #374151;
+            --muted-foreground: #6b7280;
+            --border: #d1d5db;
+            --input-bg: #f9fafb;
+            --ring: #84cc16;
+        }
+
+        .login-container {
+            max-width: 26rem;
+            width: 100%;
+        }
+        
+        /* Card styling with animations */
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem; /* More rounded corners */
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-10px);
+            animation: float-in 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes float-in {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .text-center { text-align: center; }
+        .mb-8 { margin-bottom: 2rem; }
+        
+        /* Header styling */
+        .card-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: var(--muted-foreground);
+            font-size: 1rem;
+        }
+
+        /* Form styling with icons */
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.5rem; /* Space for icon */
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background-color: var(--input-bg);
+            color: var(--foreground);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.2);
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--foreground);
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: var(--primary);
+            width: 1rem;
+            height: 1rem;
+        }
+
+        /* Button styling */
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            box-shadow: 0 4px 6px -1px rgba(21, 128, 61, 0.2), 0 2px 4px -1px rgba(21, 128, 61, 0.12);
+        }
+
+        .btn-primary:hover {
+            background-color: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 10px -3px rgba(21, 128, 61, 0.3), 0 4px 6px -2px rgba(21, 128, 61, 0.15);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary-foreground);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="card">
+            <div class="text-center mb-8 card-header">
+                <h1>ExamAce</h1>
+                <p>Sign in to continue your preparation</p>
+            </div>
+
+            <form id="login-form" novalidate>
+                <div class="form-group">
+                    <span class="form-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+                        </svg>
+                    </span>
+                    <input type="email" id="email" class="form-input" required placeholder="Email Address">
+                </div>
+                <div class="form-group">
+                    <span class="form-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                        </svg>
+                    </span>
+                    <input type="password" id="password" class="form-input" required placeholder="Password">
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="remember">
+                        Remember me
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <span>Sign In</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722",
+          measurementId: "G-XBHHK5W8VE"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- AUTHENTICATION LOGIC ---
+
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
+        const rememberCheckbox = document.getElementById('remember');
+
+        // Check if user is already signed in (respecting persistence)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User already signed in. Redirecting...");
+                window.location.href = 'dashboard.html';
+            } else {
+                console.log("No user signed in.");
+            }
+        });
+
+        // Handle login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const persistenceType = rememberCheckbox.checked ? browserLocalPersistence : browserSessionPersistence;
+
+            setLoadingState(true);
+
+            setPersistence(auth, persistenceType)
+                .then(() => {
+                    return signInWithEmailAndPassword(auth, email, password);
+                })
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    const userRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(userRef);
+
+                    if (!docSnap.exists()) {
+                        // Create a new document for the new user if it doesn't exist
+                        await setDoc(userRef, {
+                            name: user.displayName || user.email.split('@')[0],
+                            email: user.email,
+                            createdAt: serverTimestamp(),
+                            phone: '',
+                            targetExam: 'jee',
+                            studyGoal: 2,
+                        });
+                        console.log("New user document created in Firestore.");
+                    }
+                    
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    handleAuthError(error);
+                })
+                .finally(() => {
+                    setLoadingState(false);
+                });
+        });
+
+        // --- HELPER FUNCTIONS ---
+
+        function handleAuthError(error) {
+            console.error(`Login Error (${error.code}):`, error.message);
+            let friendlyMessage = "An error occurred. Please try again.";
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                friendlyMessage = "Invalid credentials. Please check your email and password.";
+            } else if (error.code === 'auth/invalid-email') {
+                friendlyMessage = "Please enter a valid email address.";
+            }
+            showError(friendlyMessage);
+        }
+
+        function setLoadingState(loading) {
+            const btnContent = loginBtn.querySelector('span');
+            if (loading) {
+                loginBtn.disabled = true;
+                btnContent.style.display = 'none';
+                const spinner = document.createElement('div');
+                spinner.className = 'spinner';
+                loginBtn.prepend(spinner);
+            } else {
+                loginBtn.disabled = false;
+                btnContent.style.display = 'inline';
+                const spinner = loginBtn.querySelector('.spinner');
+                if(spinner) spinner.remove();
+            }
+        }
+
+        function showError(message) {
+            const existingError = document.querySelector('.error-message');
+            if (existingError) existingError.remove();
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.cssText = `
+                background-color: #fef2f2;
+                border: 1px solid #fecaca;
+                color: #dc2626;
+                padding: 0.75rem;
+                border-radius: 0.375rem;
+                margin-bottom: 1rem;
+                font-size: 0.875rem;
+                text-align: center;
+            `;
+            errorDiv.textContent = message;
+            loginForm.parentNode.insertBefore(errorDiv, loginForm);
+            
+            setTimeout(() => { if (errorDiv.parentNode) errorDiv.remove(); }, 5000);
+        }
+    </script>
+</body>
+</html>
+

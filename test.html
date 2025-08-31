@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Interface - ExamAce</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #374151; background-color: #f9fafb; min-height: 100vh; overflow: hidden; }
+        :root {
+            --primary: #15803d; --primary-foreground: #ffffff; --secondary: #84cc16; --secondary-foreground: #374151;
+            --background: #ffffff; --card: #ffffff; --muted: #f3f4f6; --muted-foreground: #6b7280;
+            --border: #e5e7eb; --destructive: #dc2626; --warning: #f59e0b; --warning-foreground: #ffffff;
+        }
+        /* Layout */
+        .test-container { display: flex; height: 100vh; padding-top: 60px; }
+        .test-header { position: fixed; top: 0; left: 0; right: 0; background-color: var(--card); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 100; height: 60px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .question-nav { width: 300px; background-color: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; height: 100%; flex-shrink: 0; transition: transform 0.3s ease-in-out; }
+        .question-content { flex: 1; padding: 1.5rem 2rem; overflow-y: auto; height: 100%; }
+
+        /* Header */
+        .test-title { font-size: 1.25rem; font-weight: 600; }
+        .header-controls { display: flex; align-items: center; gap: 1rem; }
+        .timer-display { background-color: var(--muted); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 0.375rem; font-family: 'Courier New', monospace; font-weight: 600; min-width: 100px; text-align: center; }
+        .timer-display.warning { background-color: #fffbeb; border-color: var(--warning); color: #b45309; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .submit-btn { background-color: var(--primary); color: var(--primary-foreground); }
+        
+        /* Question Navigation Sidebar */
+        .nav-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .nav-title { font-weight: 600; font-size: 1.125rem; }
+        .nav-toggle-close { display: none; background: none; border: none; font-size: 1.75rem; cursor: pointer; color: var(--muted-foreground); }
+        .nav-grid-container { padding: 1rem; overflow-y: auto; flex-grow: 1; }
+        .question-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 0.5rem; }
+        .question-nav-item { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; cursor: pointer; transition: all 0.2s; background-color: var(--background); }
+        .question-nav-item.current { background-color: var(--primary); color: var(--primary-foreground); border-color: var(--primary); transform: scale(1.1); }
+        .question-nav-item.answered { background-color: #16a34a; color: white; border-color: #16a34a; }
+        .question-nav-item.not-answered { background-color: #ef4444; color: white; border-color: #ef4444;}
+        .question-nav-item.marked { box-shadow: 0 0 0 2px var(--warning) inset; }
+        .question-nav-item.answered.marked { background: linear-gradient(45deg, #16a34a 49%, var(--warning) 51%); color: white; border: none; }
+        
+        .nav-legend { padding: 1rem 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .legend-color { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border); flex-shrink: 0; }
+        .legend-color.answered { background-color: #16a34a; }
+        .legend-color.not-answered { background-color: #ef4444; }
+        .legend-color.marked { box-shadow: 0 0 0 2px var(--warning) inset; }
+        .legend-color.answered.marked { background: linear-gradient(45deg, #16a34a 49%, var(--warning) 51%); border: none; }
+
+        /* Question Content Area */
+        .mobile-nav-toggle { display: none; }
+        .question-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .question-info { display: flex; align-items: center; gap: 1rem; }
+        .question-number { background-color: var(--primary); color: var(--primary-foreground); padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; }
+        .question-subject { background-color: var(--muted); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 500; }
+        .question-timer { font-family: 'Courier New', monospace; font-weight: 600; }
+        .question-text { font-size: 1.125rem; margin-bottom: 2rem; }
+        .option { display: flex; gap: 1rem; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid var(--border); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; background-color: var(--card); }
+        .option:hover { border-color: var(--primary); background-color: #f0fdf4; }
+        .option.selected { border-color: var(--primary); background-color: var(--primary); color: var(--primary-foreground); }
+        .option-label { background-color: var(--border); width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+        .option.selected .option-label { background-color: var(--primary-foreground); color: var(--primary); }
+        
+        .question-controls { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        .control-group { display: flex; gap: 0.75rem; }
+        .btn { padding: 0.75rem 1.5rem; border: 1px solid var(--border); border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-outline { background: none; }
+        .btn-primary { background-color: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+        .btn-warning { background-color: var(--warning); color: var(--warning-foreground); border-color: var(--warning); }
+        .btn-secondary { background-color: #16a34a; color: white; border-color: #16a34a; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background-color: var(--background); border-radius: 0.5rem; padding: 2rem; max-width: 400px; width: 90%; text-align: center; }
+        .modal h3 { font-size: 1.25rem; margin-bottom: 1rem; }
+        .modal p { color: var(--muted-foreground); margin-bottom: 1.5rem; }
+        .modal-actions { display: flex; gap: 1rem; justify-content: center; }
+        .hidden { display: none !important; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .question-nav { position: fixed; top: 60px; left: 0; z-index: 101; height: calc(100vh - 60px); transform: translateX(-100%); box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); }
+            .question-nav.open { transform: translateX(0); }
+            .nav-toggle-close { display: block; }
+            .mobile-nav-toggle { display: block; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
+            .question-content { padding: 1.5rem 1rem; }
+            .question-controls { flex-direction: column; gap: 1rem; }
+            .control-group { width: 100%; } .control-group .btn { flex: 1; justify-content: center; }
+            .test-header { padding: 0.5rem 1rem; } .test-title { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="test-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+             <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+             <div class="test-title" id="test-title">Loading Test...</div>
+        </div>
+        <div class="header-controls">
+            <div class="timer-display" id="exam-timer">00:00:00</div>
+            <button class="btn submit-btn" id="submit-btn">Submit</button>
+        </div>
+    </header>
+
+    <div class="test-container" id="test-container">
+        <nav class="question-nav" id="question-nav">
+            <div class="nav-header">
+                <span class="nav-title">Question Palette</span>
+                <button class="nav-toggle-close" id="nav-toggle-close">×</button>
+            </div>
+            <div class="nav-grid-container">
+                 <div class="question-grid" id="question-grid"></div>
+            </div>
+            <div class="nav-legend">
+                 <div class="legend-item"><div class="legend-color"></div><span>Not Visited</span></div>
+                 <div class="legend-item"><div class="legend-color not-answered"></div><span>Not Answered</span></div>
+                 <div class="legend-item"><div class="legend-color answered"></div><span>Answered</span></div>
+                 <div class="legend-item"><div class="legend-color marked"></div><span>Marked for Review</span></div>
+                 <div class="legend-item"><div class="legend-color answered marked"></div><span>Answered & Marked</span></div>
+            </div>
+        </nav>
+
+        <main class="question-content">
+            <div id="question-area">
+                <div class="question-header">
+                    <div class="question-info">
+                        <div class="question-number" id="question-number">Q 1</div>
+                        <div class="question-subject" id="question-subject">Subject</div>
+                    </div>
+                     <div class="question-timer" id="question-timer">00:00</div>
+                </div>
+                <div class="question-text" id="question-text">Loading question...</div>
+                <div class="options-container" id="options-container"></div>
+                <div class="question-controls">
+                    <div class="control-group">
+                        <button class="btn btn-outline" id="prev-btn">← Previous</button>
+                        <button class="btn btn-outline" id="clear-btn">Clear Response</button>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn btn-warning" id="mark-review-btn">🔖 Mark for Review</button>
+                        <button class="btn btn-primary" id="mark-next-btn">Mark & Next →</button>
+                        <button class="btn btn-secondary" id="save-next-btn">Save & Next →</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay hidden" id="submit-modal">
+        <div class="modal">
+            <h3>Submit Test?</h3>
+            <p>Are you sure you want to submit? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="cancel-submit">Cancel</button>
+                <button class="btn submit-btn" id="confirm-submit">Confirm Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        class TestInterface {
+            constructor() {
+                this.testSession = null;
+                this.currentQuestionIndex = 0;
+                this.examTimerInterval = null;
+                this.questionTimerInterval = null;
+                
+                onAuthStateChanged(auth, user => {
+                    if (user) this.loadTestSession();
+                    else window.location.href = 'login.html';
+                });
+
+                this.initializeEventListeners();
+            }
+            
+            loadTestSession() {
+                const sessionStr = sessionStorage.getItem('test_session');
+                if (!sessionStr) {
+                    alert('Could not find an active test session. Please select a test again.');
+                    window.location.href = 'test-selection.html';
+                    return;
+                }
+                try {
+                    this.testSession = JSON.parse(sessionStr);
+                    if (!this.testSession.testData || !Array.isArray(this.testSession.testData.questions_data)) {
+                        throw new Error("Session data is corrupt or missing questions.");
+                    }
+                    this.initializeInterface();
+                } catch (error) {
+                    console.error('CRITICAL: Failed to parse session. Redirecting.', error);
+                    alert('Your test session data appears to be corrupt. Please select a test again.');
+                    sessionStorage.removeItem('test_session');
+                    window.location.href = 'test-selection.html';
+                }
+            }
+
+            initializeInterface() {
+                document.getElementById('test-title').textContent = this.testSession.testData.title;
+                this.generateQuestionNavigation();
+                this.loadQuestion(this.testSession.currentQuestion || 0);
+                this.startExamTimer();
+            }
+
+            generateQuestionNavigation() {
+                const grid = document.getElementById('question-grid');
+                grid.innerHTML = this.testSession.testData.questions_data.map((_, i) => 
+                    `<div class="question-nav-item" data-question="${i}">${i + 1}</div>`
+                ).join('');
+                grid.querySelectorAll('.question-nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.navigateToQuestion(parseInt(item.dataset.question));
+                        document.getElementById('question-nav').classList.remove('open');
+                    });
+                });
+            }
+
+            updateQuestionNavigation() {
+                document.querySelectorAll('.question-nav-item').forEach((item, index) => {
+                    item.className = 'question-nav-item'; // Reset classes
+                    if (index === this.currentQuestionIndex) item.classList.add('current');
+                    
+                    const isAnswered = this.testSession.answers[index] !== undefined;
+                    const isVisited = this.testSession.visited[index];
+
+                    if (isAnswered) {
+                        item.classList.add('answered');
+                    } else if (isVisited) {
+                        item.classList.add('not-answered');
+                    }
+
+                    if (this.testSession.markedForReview.includes(index)) {
+                        item.classList.add('marked');
+                    }
+                });
+            }
+            
+            loadQuestion(index) {
+                if (index < 0 || index >= this.testSession.testData.questions_data.length) {
+                    return; // Prevent out-of-bounds navigation
+                }
+
+                if (this.questionTimerInterval) clearInterval(this.questionTimerInterval);
+
+                this.currentQuestionIndex = index;
+                this.testSession.visited[index] = true;
+                
+                const q = this.testSession.testData.questions_data[index];
+                document.getElementById('question-number').textContent = `Question ${index + 1}`;
+                document.getElementById('question-subject').textContent = q.subject;
+                document.getElementById('question-text').innerHTML = q.questionText;
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = q.options.map((option, optIndex) => `
+                    <div class="option ${this.testSession.answers[index] === optIndex ? 'selected' : ''}" data-option="${optIndex}">
+                        <div class="option-label">${String.fromCharCode(65 + optIndex)}</div>
+                        <div class="option-text">${option}</div>
+                    </div>
+                `).join('');
+                optionsContainer.querySelectorAll('.option').forEach(option => {
+                    option.addEventListener('click', () => this.selectOption(parseInt(option.dataset.option)));
+                });
+
+                this.updateControls();
+                this.updateQuestionNavigation();
+                this.startQuestionTimer();
+                this.saveSession();
+            }
+
+            selectOption(optionIndex) {
+                this.testSession.answers[this.currentQuestionIndex] = optionIndex;
+                this.loadQuestion(this.currentQuestionIndex);
+            }
+
+            updateControls() {
+                document.getElementById('prev-btn').disabled = this.currentQuestionIndex === 0;
+                const markBtn = document.getElementById('mark-review-btn');
+                const isMarked = this.testSession.markedForReview.includes(this.currentQuestionIndex);
+                markBtn.innerHTML = isMarked ? '🔖 Unmark' : '🔖 Mark for Review';
+            }
+
+            navigateToQuestion(index) {
+                this.loadQuestion(index);
+            }
+
+            startExamTimer() {
+                if (this.examTimerInterval) clearInterval(this.examTimerInterval);
+                this.examTimerInterval = setInterval(() => {
+                    this.testSession.timeLeft--;
+                    this.updateExamTimerDisplay();
+                    if (this.testSession.timeLeft <= 0) this.submitTest();
+                }, 1000);
+            }
+
+            updateExamTimerDisplay() {
+                const timeLeft = this.testSession.timeLeft;
+                const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+                const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                const timerEl = document.getElementById('exam-timer');
+                timerEl.textContent = `${h}:${m}:${s}`;
+                if (timeLeft <= 300) timerEl.classList.add('warning');
+            }
+
+            startQuestionTimer() {
+                let timeSpent = this.testSession.timeSpent[this.currentQuestionIndex] || 0;
+                const updateDisplay = () => {
+                    const m = Math.floor(timeSpent / 60).toString().padStart(2, '0');
+                    const s = (timeSpent % 60).toString().padStart(2, '0');
+                    document.getElementById('question-timer').textContent = `${m}:${s}`;
+                };
+                updateDisplay();
+                this.questionTimerInterval = setInterval(() => {
+                    timeSpent++;
+                    this.testSession.timeSpent[this.currentQuestionIndex] = timeSpent;
+                    updateDisplay();
+                }, 1000);
+            }
+
+            saveSession() {
+                this.testSession.currentQuestion = this.currentQuestionIndex;
+                sessionStorage.setItem('test_session', JSON.stringify(this.testSession));
+            }
+            
+            submitTest() {
+                clearInterval(this.examTimerInterval);
+                clearInterval(this.questionTimerInterval);
+                const results = this.calculateResults();
+                sessionStorage.setItem('test_results', JSON.stringify(results));
+                sessionStorage.removeItem('test_session');
+                window.location.href = 'results.html';
+            }
+
+            calculateResults() {
+                const { answers, testData } = this.testSession;
+                let correct = 0, incorrect = 0, unanswered = 0, finalScore = 0;
+                const subjectWise = {};
+                
+                testData.subjects.forEach(sub => {
+                    subjectWise[sub] = { correct: 0, incorrect: 0, unanswered: 0, total: 0 };
+                });
+
+                testData.questions_data.forEach((q, i) => {
+                    subjectWise[q.subject].total++;
+                    if (answers[i] !== undefined) {
+                        if (answers[i] === q.correctAnswer) {
+                            correct++;
+                            finalScore += q.marks;
+                            subjectWise[q.subject].correct++;
+                        } else {
+                            incorrect++;
+                            finalScore -= q.negativeMarks;
+                            subjectWise[q.subject].incorrect++;
+                        }
+                    } else {
+                        unanswered++;
+                        subjectWise[q.subject].unanswered++;
+                    }
+                });
+
+                return {
+                    testData: this.testSession.testData, answers, correct, incorrect, unanswered,
+                    finalScore: Math.max(0, finalScore), subjectWise,
+                    percentage: testData.marks > 0 ? Math.max(0, (finalScore / testData.marks) * 100) : 0,
+                    completedAt: new Date().toISOString(),
+                    timeTaken: (this.testSession.testData.duration * 60) - this.testSession.timeLeft
+                };
+            }
+
+            initializeEventListeners() {
+                document.getElementById('submit-btn').addEventListener('click', () => document.getElementById('submit-modal').classList.remove('hidden'));
+                document.getElementById('cancel-submit').addEventListener('click', () => document.getElementById('submit-modal').classList.add('hidden'));
+                document.getElementById('confirm-submit').addEventListener('click', () => this.submitTest());
+                
+                document.getElementById('prev-btn').addEventListener('click', () => this.navigateToQuestion(this.currentQuestionIndex - 1));
+                document.getElementById('save-next-btn').addEventListener('click', () => this.navigateToQuestion(this.currentQuestionIndex + 1));
+                
+                document.getElementById('clear-btn').addEventListener('click', () => {
+                    delete this.testSession.answers[this.currentQuestionIndex];
+                    this.loadQuestion(this.currentQuestionIndex);
+                });
+
+                document.getElementById('mark-review-btn').addEventListener('click', () => {
+                    const reviewList = this.testSession.markedForReview;
+                    const indexInList = reviewList.indexOf(this.currentQuestionIndex);
+                    if (indexInList > -1) {
+                        reviewList.splice(indexInList, 1);
+                    } else {
+                        reviewList.push(this.currentQuestionIndex);
+                    }
+                    this.updateControls();
+                    this.updateQuestionNavigation();
+                });
+                
+                document.getElementById('mark-next-btn').addEventListener('click', () => {
+                    const reviewList = this.testSession.markedForReview;
+                    if (!reviewList.includes(this.currentQuestionIndex)) {
+                         reviewList.push(this.currentQuestionIndex);
+                    }
+                    this.navigateToQuestion(this.currentQuestionIndex + 1);
+                });
+
+                document.getElementById('mobile-nav-toggle').addEventListener('click', () => document.getElementById('question-nav').classList.add('open'));
+                document.getElementById('nav-toggle-close').addEventListener('click', () => document.getElementById('question-nav').classList.remove('open'));
+            }
+        }
+
+        new TestInterface();
+    </script>
+</body>
+</html>
+

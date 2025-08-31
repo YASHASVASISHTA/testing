@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Instructions - ExamAce</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #374151; background-color: #f9fafb; }
+        :root {
+            --primary: #15803d; --primary-foreground: #ffffff; --secondary: #84cc16;
+            --background: #ffffff; --card: #ffffff; --muted-foreground: #6b7280; --border: #e5e7eb;
+            --destructive: #dc2626;
+        }
+        .container { max-width: 800px; margin: 2rem auto; padding: 1rem; }
+        .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .test-title { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: center; }
+        .info-value { font-size: 1.75rem; font-weight: 600; color: var(--primary); }
+        .info-label { font-size: 0.875rem; color: var(--muted-foreground); }
+        .instructions-list { list-style: decimal; padding-left: 1.5rem; margin-top: 1rem; }
+        .instructions-list li { margin-bottom: 0.75rem; }
+        .agreement-section { text-align: center; margin-bottom: 1.5rem; }
+        .action-section { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 0.75rem 2rem; border-radius: 0.375rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; border: 1px solid transparent; }
+        .btn-primary { background-color: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+        .btn-primary:disabled { background-color: #9ca3af; cursor: not-allowed; border-color: #9ca3af;}
+        .btn-outline { background-color: transparent; color: var(--primary); border-color: var(--primary); }
+        .spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 0.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading-state"><h2>Loading Test Details...</h2></div>
+        <div id="instructions-content" style="display:none;">
+            <div class="card">
+                <header class="header">
+                    <h1 class="test-title" id="test-title">Test Instructions</h1>
+                </header>
+                <section class="info-grid" id="test-info-grid"></section>
+            </div>
+            <div class="card">
+                <h2>General Instructions</h2>
+                <ol class="instructions-list">
+                    <li>The clock will be set at the server. The countdown timer at the top right corner of screen will display the remaining time available for you to complete the examination.</li>
+                    <li>The Question Palette displayed on the right side of screen will show the status of each question.</li>
+                    <li>You can click on the ">" arrow which appears to the left of question palette to collapse the question palette.</li>
+                    <li>To select your answer, click on the button of one of the options. To deselect your chosen answer, click on the button of the chosen option again or click on the Clear Response button.</li>
+                    <li>You can mark a question for review, and then answer it later.</li>
+                </ol>
+            </div>
+            <div class="agreement-section">
+                <label><input type="checkbox" id="agreement-checkbox"> I have read and understood all the instructions.</label>
+            </div>
+            <section class="action-section">
+                <a href="test-selection.html" class="btn btn-outline">← Back</a>
+                <button class="btn btn-primary" id="start-btn" disabled>Start Test</button>
+            </section>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        class TestInstructionsPage {
+            constructor() {
+                this.testData = null;
+                onAuthStateChanged(auth, user => {
+                    if (user) this.loadTestData();
+                    else window.location.href = 'login.html';
+                });
+            }
+
+            loadTestData() {
+                const testDataStr = sessionStorage.getItem('current_test');
+                if (!testDataStr) {
+                    alert('No test selected. Redirecting...');
+                    window.location.href = 'test-selection.html';
+                    return;
+                }
+                this.testData = JSON.parse(testDataStr);
+                this.render();
+            }
+
+            render() {
+                document.getElementById('test-title').textContent = this.testData.title;
+                const infoGrid = document.getElementById('test-info-grid');
+                infoGrid.innerHTML = `
+                    <div><div class="info-value">${this.testData.duration}</div><div class="info-label">Minutes</div></div>
+                    <div><div class="info-value">${this.testData.questions}</div><div class="info-label">Questions</div></div>
+                    <div><div class="info-value">${this.testData.marks}</div><div class="info-label">Max Marks</div></div>
+                    <div><div class="info-value">-${this.testData.negativeMarks}</div><div class="info-label">Negative Marks</div></div>
+                `;
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('instructions-content').style.display = 'block';
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const startBtn = document.getElementById('start-btn');
+                document.getElementById('agreement-checkbox').addEventListener('change', (e) => {
+                    startBtn.disabled = !e.target.checked;
+                });
+                startBtn.addEventListener('click', () => this.startTest());
+            }
+
+            startTest() {
+                const startBtn = document.getElementById('start-btn');
+                startBtn.disabled = true;
+                startBtn.innerHTML = '<span class="spinner"></span>Starting...';
+                
+                const questionsCount = this.testData.questions_data.length;
+
+                // **CRITICAL:** Create the full, correct session object that test.html expects
+                const testSession = {
+                    testData: this.testData,
+                    startTime: new Date().toISOString(),
+                    answers: {}, // Use object for sparse storage
+                    markedForReview: [],
+                    visited: new Array(questionsCount).fill(false),
+                    currentQuestion: 0,
+                    timeSpent: new Array(questionsCount).fill(0),
+                    timeLeft: this.testData.duration * 60
+                };
+
+                sessionStorage.setItem('test_session', JSON.stringify(testSession));
+                sessionStorage.removeItem('current_test'); // Clean up temporary key
+                
+                window.location.href = 'test.html';
+            }
+        }
+        new TestInstructionsPage();
+    </script>
+</body>
+</html>
+

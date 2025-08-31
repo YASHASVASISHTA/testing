@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Selection - ExamAce</title>
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #374151; background-color: #f9fafb; }
+        :root {
+            --primary: #15803d; --primary-foreground: #ffffff; --card: #ffffff;
+            --border: #e5e7eb; --muted-foreground: #6b7280; --ring: #84cc16;
+        }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        .page-header { text-align: center; margin-bottom: 2rem; }
+        .page-title { font-size: 2.25rem; font-weight: 700; color: var(--primary); }
+        .page-subtitle { font-size: 1.1rem; color: var(--muted-foreground); margin-top: 0.5rem; }
+
+        /* Filter Section */
+        .filter-section { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .filter-group label { font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.5rem; }
+        .filter-select { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 0.375rem; background-color: #f9fafb; transition: all 0.2s; }
+        .filter-select:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 2px rgba(132, 204, 22, 0.2); }
+
+        /* Test Grid */
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+        .test-card { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; display: flex; flex-direction: column; transition: all 0.2s; }
+        .test-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08); }
+        .test-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .test-title { font-size: 1.25rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
+        .test-type-tag { background-color: #e0f2f1; color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 500; }
+        .test-description { color: var(--muted-foreground); font-size: 0.9rem; margin: 0.5rem 0 1rem; flex-grow: 1; }
+        .test-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .btn-primary { background-color: var(--primary); color: var(--primary-foreground); width: 100%; padding: 0.75rem; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #166534; }
+        
+        /* Loading and Empty States */
+        .state-container { text-align: center; padding: 3rem; background-color: var(--card); border-radius: 0.75rem; border: 1px solid var(--border); }
+        .state-container p { font-size: 1.1rem; color: var(--muted-foreground); }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <header class="page-header">
+            <h1 class="page-title">Available Mock Tests</h1>
+            <p class="page-subtitle">Find the perfect test to advance your preparation.</p>
+        </header>
+
+        <section class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="exam-filter">Exam Type</label>
+                    <select id="exam-filter" class="filter-select">
+                        <option value="all">All Exams</option>
+                        <option value="JEE">JEE</option>
+                        <option value="NEET">NEET</option>
+                        <option value="KCET">KCET</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="subject-filter">Subject</label>
+                    <select id="subject-filter" class="filter-select">
+                        <option value="all">All Subjects</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Biology">Biology</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="difficulty-filter">Difficulty</label>
+                    <select id="difficulty-filter" class="filter-select">
+                        <option value="all">All Levels</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="duration-filter">Duration</label>
+                    <select id="duration-filter" class="filter-select">
+                        <option value="all">Any Duration</option>
+                        <option value="short">Under 1 hour</option>
+                        <option value="medium">1-2 hours</option>
+                        <option value="long">Over 2 hours</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section id="state-container" class="state-container" style="display: none;"></section>
+        <section class="test-grid" id="test-grid"></section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        class TestSelectionPage {
+            constructor() {
+                this.allTests = [];
+                this.filteredTests = [];
+                this.stateContainer = document.getElementById('state-container');
+                this.testGrid = document.getElementById('test-grid');
+
+                onAuthStateChanged(auth, user => {
+                    if (user) {
+                        this.fetchTests();
+                        this.initializeEventListeners();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            async fetchTests() {
+                this.showState('Loading tests from database...');
+                try {
+                    const querySnapshot = await getDocs(collection(db, "tests"));
+                    this.allTests = querySnapshot.docs.map(doc => doc.data());
+                    this.filteredTests = [...this.allTests];
+                    this.renderTests();
+                } catch (error) {
+                    console.error("Error fetching tests: ", error);
+                    this.showState('Failed to load tests. Please try again.');
+                }
+            }
+
+            initializeEventListeners() {
+                document.getElementById('exam-filter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('subject-filter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('difficulty-filter').addEventListener('change', () => this.applyFilters());
+                document.getElementById('duration-filter').addEventListener('change', () => this.applyFilters());
+            }
+
+            applyFilters() {
+                const examType = document.getElementById('exam-filter').value;
+                const subject = document.getElementById('subject-filter').value;
+                const difficulty = document.getElementById('difficulty-filter').value;
+                const duration = document.getElementById('duration-filter').value;
+
+                this.filteredTests = this.allTests.filter(test => {
+                    const examMatch = examType === 'all' || test.type === examType;
+                    const subjectMatch = subject === 'all' || test.subjects.includes(subject);
+                    const difficultyMatch = difficulty === 'all' || test.difficulty === difficulty;
+                    
+                    let durationMatch = true;
+                    if (duration !== 'all') {
+                        if (duration === 'short') durationMatch = test.duration < 60;
+                        else if (duration === 'medium') durationMatch = test.duration >= 60 && test.duration <= 120;
+                        else if (duration === 'long') durationMatch = test.duration > 120;
+                    }
+                    
+                    return examMatch && subjectMatch && difficultyMatch && durationMatch;
+                });
+
+                this.renderTests();
+            }
+
+            renderTests() {
+                if (this.filteredTests.length === 0) {
+                    this.showState('No tests found matching your criteria. Try adjusting the filters.');
+                    this.testGrid.innerHTML = '';
+                    return;
+                }
+                
+                this.stateContainer.style.display = 'none';
+                this.testGrid.innerHTML = this.filteredTests.map(test => `
+                    <div class="test-card">
+                        <div>
+                            <div class="test-header">
+                                <h3 class="test-title">${test.title}</h3>
+                                <span class="test-type-tag">${test.type}</span>
+                            </div>
+                            <p class="test-description">${test.description}</p>
+                        </div>
+                        <div>
+                            <div class="test-details">
+                                <span>⏱️ ${test.duration} mins</span>
+                                <span>📝 ${test.questions} Questions</span>
+                                <span>🎯 ${test.marks} Marks</span>
+                                <span>⚠️ -${test.negativeMarks} Negative</span>
+                            </div>
+                            <button class="btn-primary" data-testid="${test.id}">Start Test</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                this.testGrid.addEventListener('click', e => {
+                    if (e.target.tagName === 'BUTTON') {
+                        this.startTest(e.target.dataset.testid);
+                    }
+                });
+            }
+
+            startTest(testId) {
+                const testData = this.allTests.find(t => t.id === testId);
+                if (testData) {
+                    sessionStorage.setItem('current_test', JSON.stringify(testData));
+                    window.location.href = 'test-instruction.html';
+                } else {
+                    alert('Could not find the selected test.');
+                }
+            }
+
+            showState(message) {
+                this.stateContainer.innerHTML = `<p>${message}</p>`;
+                this.stateContainer.style.display = 'block';
+            }
+        }
+        new TestSelectionPage();
+    </script>
+</body>
+</html>
+
