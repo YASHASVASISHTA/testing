@@ -16,27 +16,19 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #374151;
-            background-color: #ffffff;
+            background-color: #f9fafb;
             min-height: 100vh;
         }
 
-        /* Color variables matching the design brief */
+        /* Color variables for consistency */
         :root {
             --primary: #15803d;
             --primary-foreground: #ffffff;
             --secondary: #84cc16;
-            --secondary-foreground: #374151;
-            --background: #ffffff;
-            --foreground: #374151;
-            --card: #f0fdf4;
-            --card-foreground: #374151;
-            --muted: #f0fdf4;
-            --muted-foreground: #4b5563;
-            --border: #d1d5db;
-            --input: #e5e7eb;
-            --ring: #84cc16;
-            --destructive: #ea580c;
-            --destructive-foreground: #ffffff;
+            --card: #ffffff;
+            --muted: #f3f4f6;
+            --muted-foreground: #6b7280;
+            --border: #e5e7eb;
         }
 
         /* Navigation styles */
@@ -44,10 +36,13 @@
             background-color: var(--card);
             border-bottom: 1px solid var(--border);
             padding: 0 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -96,7 +91,6 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 0.875rem;
         }
 
         .logout-btn {
@@ -106,7 +100,6 @@
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
             cursor: pointer;
-            font-size: 0.875rem;
             transition: all 0.2s;
         }
 
@@ -115,48 +108,27 @@
         }
 
         /* Mobile menu */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--foreground);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .mobile-menu {
-            display: none;
-            background-color: var(--card);
-            border-top: 1px solid var(--border);
-            padding: 1rem;
-        }
-
-        .mobile-menu.active {
-            display: block;
-        }
-
-        .mobile-nav-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .mobile-menu { display: none; background-color: var(--card); border-top: 1px solid var(--border); padding: 1rem; }
+        .mobile-menu.active { display: block; }
+        .mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
 
         /* Main content */
         .main-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 1rem;
         }
+        
+        #loading-state { text-align: center; padding: 4rem; }
 
         .welcome-section {
             margin-bottom: 2rem;
         }
 
         .welcome-title {
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
-            color: var(--foreground);
             margin-bottom: 0.5rem;
         }
 
@@ -165,477 +137,206 @@
             font-size: 1.125rem;
         }
 
-        /* Grid layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
         /* Card styles */
         .card {
             background-color: var(--card);
             border: 1px solid var(--border);
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 1.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--foreground);
-        }
-
-        .card-icon {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 0.375rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        .icon-primary {
-            background-color: rgba(21, 128, 61, 0.1);
-            color: var(--primary);
-        }
-
-        .icon-secondary {
-            background-color: rgba(132, 204, 22, 0.1);
-            color: var(--secondary);
-        }
-
-        .icon-destructive {
-            background-color: rgba(234, 88, 12, 0.1);
-            color: var(--destructive);
-        }
-
-        /* Stats card */
-        .stat-card {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: block;
-        }
-
-        .stat-label {
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        /* Test list */
-        .test-list {
-            list-style: none;
-        }
-
-        .test-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
         }
         
-        .test-item:hover {
-            background-color: var(--muted);
-        }
-
-        .test-item:last-child {
-            border-bottom: none;
-        }
-
-        .test-info h4 {
+        .card-title {
+            font-size: 1.5rem; /* Larger title */
             font-weight: 600;
-            color: var(--foreground);
-            margin-bottom: 0.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
         }
-
-        .test-meta {
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-        }
-
-        .test-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .status-available {
-            background-color: rgba(21, 128, 61, 0.1);
-            color: var(--primary);
-        }
-
-        .status-completed {
-            background-color: rgba(132, 204, 22, 0.1);
-            color: var(--secondary);
-        }
-
-        .status-missed {
-            background-color: rgba(234, 88, 12, 0.1);
-            color: var(--destructive);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: var(--primary-foreground);
-        }
-
-        .btn-primary:hover {
-            background-color: #166534;
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary);
-            color: var(--secondary-foreground);
-        }
-
-        .btn-secondary:hover {
-            background-color: #65a30d;
-        }
-
-        .btn-outline {
-            background: none;
+        
+        /* Test list styles */
+        .test-list { list-style: none; }
+        .test-item {
+            display: grid; /* Using grid for better alignment */
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            transition: background-color 0.2s, box-shadow 0.2s;
             border: 1px solid var(--border);
-            color: var(--foreground);
         }
-
-        .btn-outline:hover {
-            background-color: var(--muted);
+        .test-item:hover { 
+            background-color: var(--muted); 
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
-
-        /* Quick actions */
-        .quick-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
+        .test-item:last-child { margin-bottom: 0; }
+        
+        .test-info h4 { font-weight: 600; font-size: 1.125rem; margin-bottom: 0.25rem; }
+        .test-meta { color: var(--muted-foreground); font-size: 0.875rem; display: flex; gap: 1rem; }
+        
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; }
+        .btn-primary { background-color: var(--primary); color: var(--primary-foreground); }
+        .btn-primary:hover { background-color: #166534; }
+        
         /* Responsive design */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .welcome-title {
-                font-size: 1.5rem;
-            }
-
-            .quick-actions {
-                flex-direction: column;
-            }
-
-            .test-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
-            .card {
-                padding: 1rem;
-            }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .welcome-title { font-size: 1.75rem; }
+            .test-item { grid-template-columns: 1fr; gap: 0.75rem; }
+            .test-item .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">ExamAce</a>
-            
+            <a href="dashboard.html" class="nav-brand">ExamAce</a>
             <ul class="nav-links">
                 <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
                 <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-                <li><a href="profile.html" class="nav-link">Profile</a></li>
             </ul>
-
             <div class="nav-user">
                 <div class="user-avatar" id="user-avatar">U</div>
                 <button class="logout-btn" id="logout-btn">Logout</button>
             </div>
-
             <button class="mobile-menu-btn" id="mobile-menu-btn">&#9776;</button>
         </div>
-
         <div class="mobile-menu" id="mobile-menu">
             <ul class="mobile-nav-links">
                 <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
                 <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-                <li><a href="profile.html" class="nav-link">Profile</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-container">
-        <!-- Welcome Section -->
-        <section class="welcome-section">
-            <h1 class="welcome-title" id="welcome-title">Welcome back!</h1>
-            <p class="welcome-subtitle">Ready to continue your exam preparation?</p>
-        </section>
+        <div id="loading-state"><h1>Loading Dashboard...</h1></div>
 
-        <!-- Stats Overview -->
-        <section class="stats-grid">
-            <div class="card stat-card">
-                <span class="stat-number" id="tests-taken">0</span>
-                <div class="stat-label">Tests Taken</div>
-            </div>
-            <div class="card stat-card">
-                <span class="stat-number" id="avg-score">0%</span>
-                <div class="stat-label">Average Score</div>
-            </div>
-            <div class="card stat-card">
-                <span class="stat-number" id="study-hours">0</span>
-                <div class="stat-label">Study Hours</div>
-            </div>
-            <div class="card stat-card">
-                <span class="stat-number" id="rank">N/A</span>
-                <div class="stat-label">Current Rank</div>
-            </div>
-        </section>
+        <div id="dashboard-content" style="display:none;">
+            <section class="welcome-section">
+                <h1 class="welcome-title" id="welcome-title">Welcome back!</h1>
+                <p class="welcome-subtitle">Select a test from the list below to get started.</p>
+            </section>
 
-        <!-- Dashboard Grid -->
-        <section class="dashboard-grid">
-            <!-- Upcoming Tests -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Upcoming Tests</h2>
-                    <div class="card-icon icon-primary">&#128221;</div>
-                </div>
-                <ul class="test-list" id="upcoming-tests">
-                    <!-- Upcoming tests will be loaded here -->
+            <section class="card">
+                <h2 class="card-title">Available Mock Tests</h2>
+                <ul class="test-list" id="available-tests-list">
+                    <!-- Populated by script -->
                 </ul>
-                <div class="quick-actions">
-                    <a href="test-selection.html" class="btn btn-primary">View All Tests</a>
-                </div>
-            </div>
-
-            <!-- Recent Performance -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Recent Performance</h2>
-                    <div class="card-icon icon-secondary">&#128202;</div>
-                </div>
-                <ul class="test-list" id="recent-tests">
-                   <!-- Recent performance will be loaded here -->
-                </ul>
-                <div class="quick-actions">
-                    <a href="analytics.html" class="btn btn-secondary">View Analytics</a>
-                </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, query, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // Use the same Firebase config from your other pages
         const firebaseConfig = {
           apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
           authDomain: "testseries-38752.firebaseapp.com",
           projectId: "testseries-38752",
           storageBucket: "testseries-38752.firebasestorage.app",
           messagingSenderId: "519384534407",
-          appId: "1:519384534407:web:201265a9d703708334d722",
-          measurementId: "G-XBHHK5W8VE"
+          appId: "1:519384534407:web:201265a9d703708334d722"
         };
       
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // --- AUTHENTICATION & DATA LOADING ---
         onAuthStateChanged(auth, user => {
             if (user) {
-                // User is signed in
                 loadDashboardData(user);
             } else {
-                // User is signed out
                 window.location.href = 'login.html';
             }
         });
 
         async function loadDashboardData(user) {
             try {
-                const userRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(userRef);
-
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    updateWelcomeMessage(userData);
-                }
-
-                // Fetch data in parallel
-                const [results, upcomingTests] = await Promise.all([
-                    fetchTestResults(user.uid),
-                    fetchUpcomingTests()
+                // Fetch user's name and the list of tests concurrently
+                const [userDoc, testsSnapshot] = await Promise.all([
+                    getDoc(doc(db, "users", user.uid)),
+                    getDocs(query(collection(db, "tests")))
                 ]);
 
-                updateRecentPerformance(results);
-                updateStats(results, docSnap.data());
-                updateUpcomingTests(upcomingTests);
+                // User's name for welcome message
+                const userName = user.displayName || user.email || 'User';
+                updateWelcomeMessage(userName);
+
+                // Process and display available tests
+                const availableTests = testsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateAvailableTests(availableTests);
+
+                // Show content
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('dashboard-content').style.display = 'block';
 
             } catch (error) {
                 console.error("Error loading dashboard data:", error);
+                document.getElementById('loading-state').innerHTML = '<h1>Could not load dashboard. Please check your connection or permissions.</h1>';
             }
         }
 
-        async function fetchTestResults(userId) {
-            const resultsCol = collection(db, `users/${userId}/results`);
-            const q = query(resultsCol, orderBy("completedAt", "desc"));
-            const resultsSnapshot = await getDocs(q);
-            return resultsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-        }
-        
-        async function fetchUpcomingTests() {
-            const testsCol = collection(db, "tests");
-            const q = query(testsCol, limit(3)); // Get first 3 tests as "upcoming"
-            const testsSnapshot = await getDocs(q);
-            return testsSnapshot.docs.map(doc => doc.data());
+        // --- UI UPDATE FUNCTIONS ---
+
+        function updateWelcomeMessage(name) {
+            document.getElementById('welcome-title').textContent = `Welcome back, ${name.split('@')[0]}!`;
+            document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
         }
 
-        function updateWelcomeMessage(userData) {
-            document.getElementById('welcome-title').textContent = `Welcome back, ${userData.name}!`;
-            document.getElementById('user-avatar').textContent = userData.name.charAt(0).toUpperCase();
-        }
-        
-        function updateRecentPerformance(results) {
-            const recentTestsContainer = document.getElementById('recent-tests');
-            if(results.length === 0) {
-                recentTestsContainer.innerHTML = '<li><p style="padding: 1rem 0;">No tests taken yet.</p></li>';
-                return;
-            }
-
-            const recentResults = results.slice(0, 3); // Already sorted by query
-            
-            recentTestsContainer.innerHTML = recentResults.map(result => `
-                <li class="test-item">
-                    <div class="test-info">
-                        <h4>${result.testData.title}</h4>
-                        <div class="test-meta">Score: ${result.finalScore}/${result.testData.marks} &bull; ${result.percentage.toFixed(1)}%</div>
-                    </div>
-                    <span class="test-status status-completed">Completed</span>
-                </li>
-            `).join('');
-        }
-        
-        function updateUpcomingTests(tests) {
-            const upcomingTestsContainer = document.getElementById('upcoming-tests');
+        function updateAvailableTests(tests) {
+            const container = document.getElementById('available-tests-list');
             if (tests.length === 0) {
-                upcomingTestsContainer.innerHTML = '<li><p style="padding: 1rem 0;">No new tests available.</p></li>';
+                container.innerHTML = '<li><p style="padding: 1rem;">No new tests are available at the moment. Please check back later.</p></li>';
                 return;
             }
-            upcomingTestsContainer.innerHTML = tests.map(test => `
-                 <li class="test-item" style="cursor: pointer;" data-testid="${test.id}">
+
+            container.innerHTML = tests.map(test => `
+                 <li class="test-item" data-testid="${test.id}">
                     <div class="test-info">
                         <h4>${test.title}</h4>
-                        <div class="test-meta">${test.subjects.join(', ')} &bull; ${test.duration} mins</div>
+                        <div class="test-meta">
+                            <span>${test.questions_data.length} Questions</span>
+                            <span>&bull;</span>
+                            <span>${test.duration} mins</span>
+                             <span>&bull;</span>
+                            <span>${test.marks} Marks</span>
+                        </div>
                     </div>
-                    <span class="test-status status-available">Available</span>
+                    <button class="btn btn-primary">Start Test</button>
                 </li>
             `).join('');
             
-            // Add click listeners
-            upcomingTestsContainer.querySelectorAll('.test-item').forEach(item => {
+            // Add click handlers to each test item (the entire li) to start a test
+            container.querySelectorAll('.test-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    const test = tests.find(t => t.id === item.dataset.testid);
-                    sessionStorage.setItem('current_test', JSON.stringify(test));
-                    window.location.href = 'test-instruction.html';
+                    const testId = item.dataset.testid;
+                    const testData = tests.find(t => t.id === testId);
+                    if (testData) {
+                        sessionStorage.setItem('current_test', JSON.stringify(testData));
+                        window.location.href = 'test-instruction.html';
+                    }
                 });
             });
         }
 
-        function updateStats(results, userData) {
-            const testsTaken = results.length;
-            const totalPercentage = results.reduce((acc, curr) => acc + curr.percentage, 0);
-            const avgScore = testsTaken > 0 ? (totalPercentage / testsTaken).toFixed(0) : 0;
-            const totalTimeMinutes = results.reduce((acc, curr) => acc + (curr.timeTaken || 0), 0) / 60;
-            
-            document.getElementById('tests-taken').textContent = testsTaken;
-            document.getElementById('avg-score').textContent = `${avgScore}%`;
-            document.getElementById('study-hours').textContent = Math.round(totalTimeMinutes / 60);
-            // Rank needs a leaderboard implementation
-        }
-
-        // Logout functionality
+        // --- EVENT LISTENERS ---
         document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Sign out error', error);
-            });
+            signOut(auth).catch(error => console.error('Sign out error', error));
         });
 
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('active');
         });
     </script>
-
 </body>
 </html>
 
