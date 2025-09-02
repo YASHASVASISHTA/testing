@@ -48,7 +48,8 @@
 
         .review-question { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
         .review-question:last-child { border-bottom: none; }
-        .review-question-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-bottom: 1rem; }
+        .review-question-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;}
+        .review-question-topic { font-size: 0.8rem; background-color: var(--muted); padding: 0.2rem 0.6rem; border-radius: 0.25rem; color: var(--muted-foreground);}
         .status-tag { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; }
         .status-correct { background-color: #dcfce7; color: #15803d; }
         .status-incorrect { background-color: #fee2e2; color: #b91c1c; }
@@ -89,7 +90,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">ExamAce</a>
+            <a href="dashboard.html" class="nav-brand">ExamAce</a>
             <div class="nav-user"><div class="user-avatar" id="user-avatar">U</div></div>
         </div>
     </nav>
@@ -177,21 +178,24 @@
             loadResults() {
                 const resultsStr = sessionStorage.getItem('test_results');
                 if (!resultsStr) {
-                    document.getElementById('loading-state').innerHTML = '<h1>No results found.</h1>';
+                    document.getElementById('loading-state').innerHTML = '<h1>No results found. Please complete a test first.</h1><br/><a href="test-selection.html">Go to tests</a>';
                     return;
                 }
                 try {
                     this.results = JSON.parse(resultsStr);
-                    this.saveResults();
+                    this.saveResultsToFirestore(); // Renamed to be more specific
                     this.renderPage();
                 } catch (error) {
                     console.error('Error parsing results:', error);
-                    document.getElementById('loading-state').innerHTML = '<h1>Error loading results.</h1>';
+                    document.getElementById('loading-state').innerHTML = '<h1>Error loading results. The data might be corrupted.</h1>';
                 }
             }
             
-            async saveResults() {
+            async saveResultsToFirestore() {
+                // Using the test ID and timestamp to create a unique ID for the result document
                 const resultId = `${this.results.testData.id}_${this.results.completedAt}`;
+                
+                // MODIFIED: This object contains all the necessary flat data for analytics
                 const resultSummary = {
                     testId: this.results.testData.id,
                     testTitle: this.results.testData.title,
@@ -203,11 +207,14 @@
                     correct: this.results.correct,
                     incorrect: this.results.incorrect,
                     unanswered: this.results.unanswered,
-                    subjectWise: this.results.subjectWise
+                    subjectWise: this.results.subjectWise,
+                    timeTaken: this.results.timeTaken,
+                    incorrectTopics: this.results.incorrectTopics || [] // Ensure it's always an array
                 };
                 try {
                     const resultRef = doc(db, "users", this.user.uid, "results", resultId);
                     await setDoc(resultRef, resultSummary);
+                    console.log("Result saved to Firestore successfully.");
                 } catch (error) {
                     console.error("Error saving result to Firestore: ", error);
                 }
@@ -242,13 +249,14 @@
                 const subjects = this.results.subjectWise;
                 for (const subjectName in subjects) {
                     const data = subjects[subjectName];
-                    const accuracy = data.total > 0 ? ((data.correct / (data.correct + data.incorrect)) * 100).toFixed(1) : 0;
+                    const attempted = data.correct + data.incorrect;
+                    const accuracy = attempted > 0 ? ((data.correct / attempted) * 100) : 0;
                     const subjectDiv = document.createElement('div');
                     subjectDiv.className = 'subject-item';
                     subjectDiv.innerHTML = `
                         <div class="subject-header">
                             <span>${subjectName}</span>
-                            <span>${accuracy}% Accuracy</span>
+                            <span>${accuracy.toFixed(1)}% Accuracy</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${accuracy}%"></div>
@@ -263,20 +271,19 @@
             
             renderTimeAnalysis() {
                 const container = document.getElementById('time-container');
-                const totalTime = this.results.testData.duration * 60;
-                const timeTaken = this.results.timeTaken;
+                const timeTaken = this.results.timeTaken || 0;
                 const attemptedCount = this.results.correct + this.results.incorrect;
                 const avgTime = attemptedCount > 0 ? (timeTaken / attemptedCount).toFixed(0) : 0;
 
                 const formatTime = (seconds) => {
-                    const m = Math.floor(seconds / 60);
-                    const s = seconds % 60;
+                    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const s = (seconds % 60).toString().padStart(2, '0');
                     return `${m}m ${s}s`;
                 };
 
                 container.innerHTML = `
                     <div class="time-item"><span class="time-label">Time Taken</span><span class="time-value">${formatTime(timeTaken)}</span></div>
-                    <div class="time-item"><span class="time-label">Total Time</span><span class="time-value">${formatTime(totalTime)}</span></div>
+                    <div class="time-item"><span class="time-label">Total Time</span><span class="time-value">${this.results.testData.duration}m 00s</span></div>
                     <div class="time-item"><span class="time-label">Avg. Time/Ques</span><span class="time-value">${avgTime}s</span></div>
                 `;
             }
@@ -300,7 +307,10 @@
                     questionEl.innerHTML = `
                         <div class="review-question-header">
                             <span><b>Q${index + 1}:</b> (${q.subject})</span>
-                            <span class="status-tag status-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                            <div>
+                                <span class="review-question-topic">${q.topic || 'General'}</span>
+                                <span class="status-tag status-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                            </div>
                         </div>
                         <p>${q.questionText}</p>
                         <div class="review-options">
@@ -339,4 +349,3 @@
     </script>
 </body>
 </html>
-

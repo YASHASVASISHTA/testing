@@ -350,6 +350,7 @@
                 const { answers, testData } = this.testSession;
                 let correct = 0, incorrect = 0, unanswered = 0, finalScore = 0;
                 const subjectWise = {};
+                const incorrectTopics = []; // <-- MODIFIED: Array to store incorrect topics
                 
                 testData.subjects.forEach(sub => {
                     subjectWise[sub] = { correct: 0, incorrect: 0, unanswered: 0, total: 0 };
@@ -366,6 +367,10 @@
                             incorrect++;
                             finalScore -= q.negativeMarks;
                             subjectWise[q.subject].incorrect++;
+                            // MODIFIED: If question is wrong, add its topic to the list
+                            if (q.topic) {
+                                incorrectTopics.push(q.topic);
+                            }
                         }
                     } else {
                         unanswered++;
@@ -378,7 +383,8 @@
                     finalScore: Math.max(0, finalScore), subjectWise,
                     percentage: testData.marks > 0 ? Math.max(0, (finalScore / testData.marks) * 100) : 0,
                     completedAt: new Date().toISOString(),
-                    timeTaken: (this.testSession.testData.duration * 60) - this.testSession.timeLeft
+                    timeTaken: (this.testSession.testData.duration * 60) - this.testSession.timeLeft,
+                    incorrectTopics: incorrectTopics // <-- MODIFIED: Include in the returned object
                 };
             }
 
@@ -424,4 +430,3 @@
     </script>
 </body>
 </html>
-

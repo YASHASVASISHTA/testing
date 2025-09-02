@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Analytics - ExamAce</title>
+    <!-- Chart.js for creating charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Reusing styles from results.html for a consistent look and feel */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #374151; background-color: #f9fafb; }
+        :root {
+            --primary: #15803d; --primary-foreground: #ffffff; --secondary: #84cc16;
+            --background: #ffffff; --foreground: #374151; --card: #ffffff;
+            --muted: #f3f4f6; --muted-foreground: #6b7280; --border: #e5e7eb;
+            --destructive: #dc2626; --warning: #f59e0b; --success: #16a34a;
+        }
+        /* Navigation */
+        .navbar { background-color: var(--card); border-bottom: 1px solid var(--border); padding: 0 1rem; position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 4rem; }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-user { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar { width: 2rem; height: 2rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+
+        /* Main Content */
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
+        #loading-state, #no-data-state { text-align: center; padding: 4rem; }
+        #no-data-state a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .page-title { font-size: 2.25rem; font-weight: 700; margin-bottom: 2rem; color: var(--primary); }
+        .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem; }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+
+        /* Overall Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .stat-card { text-align: center; padding: 1.5rem; background-color: var(--muted); border-radius: 0.5rem; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 1rem; color: var(--muted-foreground); margin-top: 0.5rem; }
+
+        /* Analysis Grid (for charts and lists) */
+        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; align-items: start; }
+        
+        .topics-list { list-style: none; }
+        .topics-list li { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .topics-list li:last-child { border-bottom: none; }
+        .topic-name { font-weight: 500; }
+        .topic-count { background-color: #fee2e2; color: #b91c1c; font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600;}
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.75rem; }
+            .stat-value { font-size: 2rem; }
+            .analysis-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="dashboard.html" class="nav-brand">ExamAce</a>
+            <div class="nav-user"><div class="user-avatar" id="user-avatar">U</div></div>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div id="loading-state"><h1>Loading Analytics...</h1></div>
+        <div id="no-data-state" style="display:none;">
+            <h1>No Analytics Data Found</h1>
+            <p style="margin-top: 1rem;">You need to complete at least one test to see your performance analysis.</p>
+            <p style="margin-top: 1.5rem;"><a href="test-selection.html">Take a Test Now</a></p>
+        </div>
+
+        <div id="analytics-content" style="display:none;">
+            <h1 class="page-title">Your Performance Analytics</h1>
+            
+            <!-- Overall Stats -->
+            <div class="stats-grid card">
+                <div class="stat-card"><div class="stat-value" id="stat-tests-taken">0</div><div class="stat-label">Tests Taken</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-avg-score">0%</div><div class="stat-label">Average Score</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-avg-accuracy">0%</div><div class="stat-label">Overall Accuracy</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-total-time">0m</div><div class="stat-label">Total Time Spent</div></div>
+            </div>
+
+            <!-- Performance Over Time Chart -->
+            <div class="card">
+                <h2 class="card-title">Performance Over Time</h2>
+                <canvas id="performance-chart"></canvas>
+            </div>
+
+            <div class="analysis-grid">
+                 <!-- Subject Performance Chart -->
+                <div class="card">
+                    <h2 class="card-title">Subject Performance</h2>
+                    <canvas id="subject-chart"></canvas>
+                </div>
+                <!-- Topics to Improve -->
+                <div class="card">
+                    <h2 class="card-title">Top Areas for Improvement</h2>
+                    <ul class="topics-list" id="topics-list">
+                        <!-- Topics will be dynamically inserted here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // Firebase imports - added collection, getDocs, query, and orderBy for fetching data
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Use the same Firebase config from your results page
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        class AnalyticsPage {
+            constructor() {
+                this.user = null;
+                this.charts = {}; // To hold chart instances
+                onAuthStateChanged(auth, user => {
+                    if (user) {
+                        this.user = user;
+                        document.getElementById('user-avatar').textContent = (user.displayName || user.email).charAt(0).toUpperCase();
+                        this.fetchAndProcessData();
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
+            async fetchAndProcessData() {
+                // Query all results for the current user, ordered by completion date
+                const resultsRef = collection(db, "users", this.user.uid, "results");
+                const q = query(resultsRef, orderBy("completedAt", "asc"));
+                
+                try {
+                    const querySnapshot = await getDocs(q);
+                    const results = [];
+                    querySnapshot.forEach(doc => results.push(doc.data()));
+
+                    if (results.length === 0) {
+                        this.showNoDataState();
+                        return;
+                    }
+                    
+                    this.renderAnalytics(results);
+
+                } catch (error) {
+                    console.error("Error fetching results: ", error);
+                    document.getElementById('loading-state').innerHTML = '<h1>Error loading analytics.</h1>';
+                }
+            }
+
+            renderAnalytics(results) {
+                this.renderOverallStats(results);
+                this.renderPerformanceChart(results);
+                this.renderSubjectChart(results);
+                this.renderTopicsList(results);
+
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('analytics-content').style.display = 'block';
+            }
+            
+            showNoDataState() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('no-data-state').style.display = 'block';
+            }
+
+            renderOverallStats(results) {
+                const totalTests = results.length;
+                const totalPercentage = results.reduce((sum, r) => sum + r.percentage, 0);
+                const avgScore = totalTests > 0 ? (totalPercentage / totalTests).toFixed(1) : 0;
+                
+                const totalCorrect = results.reduce((sum, r) => sum + r.correct, 0);
+                const totalIncorrect = results.reduce((sum, r) => sum + r.incorrect, 0);
+                const totalAttempted = totalCorrect + totalIncorrect;
+                const avgAccuracy = totalAttempted > 0 ? (totalCorrect / totalAttempted * 100).toFixed(1) : 0;
+                
+                const totalTime = results.reduce((sum, r) => sum + r.timeTaken, 0);
+                const totalTimeInMinutes = Math.round(totalTime / 60);
+
+                document.getElementById('stat-tests-taken').textContent = totalTests;
+                document.getElementById('stat-avg-score').textContent = `${avgScore}%`;
+                document.getElementById('stat-avg-accuracy').textContent = `${avgAccuracy}%`;
+                document.getElementById('stat-total-time').textContent = `${totalTimeInMinutes}m`;
+            }
+
+            renderPerformanceChart(results) {
+                const ctx = document.getElementById('performance-chart').getContext('2d');
+                if (this.charts.performance) this.charts.performance.destroy();
+                
+                this.charts.performance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: results.map(r => new Date(r.completedAt).toLocaleDateString()),
+                        datasets: [{
+                            label: 'Score Percentage',
+                            data: results.map(r => r.percentage),
+                            borderColor: 'var(--primary)',
+                            backgroundColor: 'rgba(21, 128, 61, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: true }
+                });
+            }
+
+            renderSubjectChart(results) {
+                const subjectData = {};
+                results.forEach(result => {
+                    for (const subjectName in result.subjectWise) {
+                        if (!subjectData[subjectName]) {
+                            subjectData[subjectName] = { correct: 0, incorrect: 0 };
+                        }
+                        subjectData[subjectName].correct += result.subjectWise[subjectName].correct;
+                        subjectData[subjectName].incorrect += result.subjectWise[subjectName].incorrect;
+                    }
+                });
+
+                const labels = Object.keys(subjectData);
+                const accuracies = labels.map(label => {
+                    const { correct, incorrect } = subjectData[label];
+                    const attempted = correct + incorrect;
+                    return attempted > 0 ? (correct / attempted * 100) : 0;
+                });
+                
+                const ctx = document.getElementById('subject-chart').getContext('2d');
+                if (this.charts.subject) this.charts.subject.destroy();
+
+                this.charts.subject = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Average Accuracy %',
+                            data: accuracies,
+                            backgroundColor: 'var(--primary)',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        scales: { y: { beginAtZero: true, max: 100 } },
+                        indexAxis: 'y'
+                    }
+                });
+            }
+
+            renderTopicsList(results) {
+                const topicCounts = {};
+                results.forEach(result => {
+                    if (result.incorrectTopics) {
+                        result.incorrectTopics.forEach(topic => {
+                            topicCounts[topic] = (topicCounts[topic] || 0) + 1;
+                        });
+                    }
+                });
+
+                const sortedTopics = Object.entries(topicCounts).sort(([,a],[,b]) => b - a);
+                const container = document.getElementById('topics-list');
+                container.innerHTML = '';
+
+                if (sortedTopics.length === 0) {
+                     container.innerHTML = '<li>No specific weak topics found. Great job!</li>';
+                     return;
+                }
+
+                sortedTopics.slice(0, 7).forEach(([topic, count]) => { // Show top 7
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="topic-name">${topic}</span><span class="topic-count">${count} incorrect</span>`;
+                    container.appendChild(li);
+                });
+            }
+        }
+
+        new AnalyticsPage();
+    </script>
+</body>
+</html>
