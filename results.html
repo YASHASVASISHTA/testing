@@ -68,8 +68,14 @@
         .review-options .option.correct-answer { background-color: #dcfce7; border-color: #4ade80; }
         .review-options .option.incorrect-choice { background-color: #fee2e2; border-color: #f87171; text-decoration: line-through; }
         .review-options .option-label { font-weight: 600; }
+        
+        /* NEW: Styles for the solution section */
         .solution { margin-top: 1rem; padding: 1rem; background-color: #e0f2fe; border-left: 4px solid #38bdf8; }
         .solution h4 { color: #0369a1; margin-bottom: 0.5rem; }
+        .solution ol { padding-left: 1.25rem; } /* Add padding for the numbered list */
+        .solution li { margin-bottom: 0.5rem; } /* Space out list items */
+        .solution .conclusion { margin-top: 1rem; font-weight: 600; }
+
 
         .sidebar-card { position: sticky; top: 5rem; }
         .subject-breakdown .subject-item { margin-bottom: 1rem; }
@@ -247,7 +253,17 @@
                     const correctOptionLetter = String.fromCharCode(65 + q.correctAnswer);
                     const correctOptionText = q.options[q.correctAnswer];
                     solutionText += `\nCorrect Answer: ${correctOptionLetter}. ${correctOptionText}\n`;
-                    solutionText += `Solution: ${q.solution || 'No detailed solution available.'}\n`;
+                    
+                    // Format the solution text
+                    let formattedSolution = q.solution || 'No detailed solution available.';
+                    formattedSolution = formattedSolution.replace(/<br>/g, '\n').replace(/Solution: /g, '');
+                    const steps = formattedSolution.split('\n').map(s => s.trim()).filter(s => s);
+                    
+                    solutionText += `Solution:\n`;
+                    steps.forEach(step => {
+                        solutionText += `- ${step}\n`;
+                    });
+
                     solutionText += "----------------------------------------\n\n";
                 });
 
@@ -361,6 +377,7 @@
                 `;
             }
 
+            // MODIFIED: This function now formats the solution text
             renderAnswerReview(filter = 'all') {
                 const container = document.getElementById('review-container');
                 container.innerHTML = '';
@@ -371,6 +388,18 @@
                     let status = (userAnswer !== undefined) ? (isCorrect ? 'correct' : 'incorrect') : 'unanswered';
                     
                     if (filter !== 'all' && filter !== status) return;
+                    
+                    // Format the solution string by splitting on <br>
+                    let formattedSolution = q.solution || 'No detailed solution available.';
+                    const steps = formattedSolution.replace(/Solution: /g, '').split(/<br\s*\/?>/i);
+                    let solutionHtml = '';
+                    if (steps.length > 1) {
+                        const conclusion = steps.pop(); // Assume last part is the conclusion
+                        solutionHtml = `<ol>${steps.map(step => `<li>${step.trim()}</li>`).join('')}</ol><p class="conclusion">${conclusion.trim()}</p>`;
+                    } else {
+                        solutionHtml = `<p>${formattedSolution}</p>`;
+                    }
+
 
                     container.innerHTML += `
                         <div class="review-question" data-status="${status}">
@@ -395,7 +424,7 @@
                             </div>
                             <div class="solution">
                                 <h4>Solution:</h4>
-                                <p>${q.solution || 'No detailed solution available.'}</p>
+                                ${solutionHtml}
                             </div>
                         </div>
                     `;
