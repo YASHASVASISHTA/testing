@@ -18,14 +18,24 @@
         .navbar { background-color: var(--card); border-bottom: 1px solid var(--border); padding: 0 1rem; position: sticky; top: 0; z-index: 100; }
         .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 4rem; }
         .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-link { color: var(--foreground); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary); }
         .nav-user { display: flex; align-items: center; gap: 1rem; }
         .user-avatar { width: 2rem; height: 2rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .logout-btn { background: none; border: 1px solid var(--border); color: var(--foreground); padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; }
+
+        /* Mobile menu */
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.75rem; cursor: pointer; color: var(--foreground); }
+        .mobile-menu { display: none; background-color: var(--card); border-top: 1px solid var(--border); padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .mobile-menu.active { display: block; }
+        .mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .mobile-nav-links .nav-link { display: block; padding: 0.5rem 0; }
 
         /* Main Content */
         .main-container { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
         #loading-state { text-align: center; padding: 4rem; }
 
-        /* Summary Header */
         .summary-header { background: linear-gradient(135deg, var(--primary), #166534); color: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; text-align: center; }
         .summary-title { font-size: 1.25rem; opacity: 0.9; }
         .summary-test-name { font-size: 2rem; font-weight: 700; margin: 0.5rem 0; }
@@ -35,13 +45,12 @@
         .summary-stat-value { font-size: 1.75rem; font-weight: 600; }
         .summary-stat-label { font-size: 0.875rem; opacity: 0.8; }
 
-        /* Main Grid Layout */
-        .results-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start; }
+        .download-section { margin-bottom: 2rem; text-align: center; }
 
+        .results-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start; }
         .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; }
         .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
         
-        /* Answer Review Section */
         .question-filter { margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .filter-btn { background: var(--muted); border: 1px solid var(--border); color: var(--muted-foreground); padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; transition: all 0.2s; }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
@@ -62,7 +71,6 @@
         .solution { margin-top: 1rem; padding: 1rem; background-color: #e0f2fe; border-left: 4px solid #38bdf8; }
         .solution h4 { color: #0369a1; margin-bottom: 0.5rem; }
 
-        /* Right Sidebar */
         .sidebar-card { position: sticky; top: 5rem; }
         .subject-breakdown .subject-item { margin-bottom: 1rem; }
         .subject-header { display: flex; justify-content: space-between; font-weight: 500; margin-bottom: 0.5rem; }
@@ -75,13 +83,17 @@
         .time-value { font-weight: 600; }
 
         .action-buttons { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
-        .btn { padding: 0.75rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; }
+        .btn { padding: 0.75rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-primary { background-color: var(--primary); color: white; border: 1px solid var(--primary); }
         .btn-outline { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); }
         
         @media (max-width: 992px) {
             .results-grid { grid-template-columns: 1fr; }
             .sidebar-card { position: static; }
+        }
+        @media (max-width: 768px) {
+            .nav-links, .nav-user { display: none; }
+            .mobile-menu-btn { display: block; }
             .summary-score { font-size: 3.5rem; }
             .summary-test-name { font-size: 1.5rem; }
         }
@@ -91,7 +103,30 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="dashboard.html" class="nav-brand">ExamAce</a>
-            <div class="nav-user"><div class="user-avatar" id="user-avatar">U</div></div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link">Tips & Revision</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <button class="logout-btn" id="logout-btn">Logout</button>
+            </div>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">&#9776;</button>
+        </div>
+        <div class="mobile-menu" id="mobile-menu">
+            <ul class="mobile-nav-links">
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link">Tips & Revision</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
+                <li><a href="#" id="mobile-logout-btn" class="nav-link">Logout</a></li>
+            </ul>
         </div>
     </nav>
 
@@ -109,6 +144,16 @@
                     <div class="summary-stat"><div class="summary-stat-value" id="stat-accuracy">0%</div><div class="summary-stat-label">Accuracy</div></div>
                 </div>
             </section>
+
+            <div class="download-section">
+                <button class="btn btn-primary" id="download-solutions-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"></path>
+                    </svg>
+                    <span>Download Solutions</span>
+                </button>
+            </div>
 
             <div class="results-grid">
                 <div class="card" id="answer-review-card">
@@ -133,7 +178,7 @@
                              <div id="time-container"></div>
                         </div>
                          <div class="action-buttons">
-                            <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                            <a href="analytics.html" class="btn btn-primary">View Full Analytics</a>
                             <a href="test-selection.html" class="btn btn-outline">Take Another Test</a>
                         </div>
                     </div>
@@ -144,7 +189,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -173,29 +218,69 @@
                         window.location.href = 'login.html';
                     }
                 });
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                const handleLogout = () => signOut(auth).catch(e => console.error(e));
+                document.getElementById('logout-btn').addEventListener('click', handleLogout);
+                document.getElementById('mobile-logout-btn').addEventListener('click', handleLogout);
+
+                document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                     document.getElementById('mobile-menu').classList.toggle('active');
+                });
+                
+                document.getElementById('download-solutions-btn').addEventListener('click', () => this.downloadSolutions());
+            }
+
+            downloadSolutions() {
+                if (!this.results) return;
+
+                let solutionText = `Solutions for: ${this.results.testData.title}\n`;
+                solutionText += "========================================\n\n";
+
+                this.results.testData.questions_data.forEach((q, index) => {
+                    solutionText += `Q${index + 1}: ${q.questionText}\n`;
+                    q.options.forEach((option, optIndex) => {
+                        solutionText += `  ${String.fromCharCode(65 + optIndex)}. ${option}\n`;
+                    });
+                    const correctOptionLetter = String.fromCharCode(65 + q.correctAnswer);
+                    const correctOptionText = q.options[q.correctAnswer];
+                    solutionText += `\nCorrect Answer: ${correctOptionLetter}. ${correctOptionText}\n`;
+                    solutionText += `Solution: ${q.solution || 'No detailed solution available.'}\n`;
+                    solutionText += "----------------------------------------\n\n";
+                });
+
+                const blob = new Blob([solutionText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName = `${this.results.testData.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_solutions.txt`;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             }
 
             loadResults() {
                 const resultsStr = sessionStorage.getItem('test_results');
                 if (!resultsStr) {
-                    document.getElementById('loading-state').innerHTML = '<h1>No results found. Please complete a test first.</h1><br/><a href="test-selection.html">Go to tests</a>';
+                    document.getElementById('loading-state').innerHTML = '<h1>No results found.</h1>';
                     return;
                 }
                 try {
                     this.results = JSON.parse(resultsStr);
-                    this.saveResultsToFirestore(); // Renamed to be more specific
+                    this.saveResultsToFirestore();
                     this.renderPage();
                 } catch (error) {
                     console.error('Error parsing results:', error);
-                    document.getElementById('loading-state').innerHTML = '<h1>Error loading results. The data might be corrupted.</h1>';
+                    document.getElementById('loading-state').innerHTML = '<h1>Error loading results data.</h1>';
                 }
             }
             
             async saveResultsToFirestore() {
-                // Using the test ID and timestamp to create a unique ID for the result document
                 const resultId = `${this.results.testData.id}_${this.results.completedAt}`;
-                
-                // MODIFIED: This object contains all the necessary flat data for analytics
                 const resultSummary = {
                     testId: this.results.testData.id,
                     testTitle: this.results.testData.title,
@@ -209,14 +294,14 @@
                     unanswered: this.results.unanswered,
                     subjectWise: this.results.subjectWise,
                     timeTaken: this.results.timeTaken,
-                    incorrectTopics: this.results.incorrectTopics || [] // Ensure it's always an array
+                    incorrectTopics: this.results.incorrectTopics || []
                 };
                 try {
                     const resultRef = doc(db, "users", this.user.uid, "results", resultId);
                     await setDoc(resultRef, resultSummary);
-                    console.log("Result saved to Firestore successfully.");
+                    console.log("Result saved.");
                 } catch (error) {
-                    console.error("Error saving result to Firestore: ", error);
+                    console.error("Error saving result: ", error);
                 }
             }
 
@@ -251,21 +336,14 @@
                     const data = subjects[subjectName];
                     const attempted = data.correct + data.incorrect;
                     const accuracy = attempted > 0 ? ((data.correct / attempted) * 100) : 0;
-                    const subjectDiv = document.createElement('div');
-                    subjectDiv.className = 'subject-item';
-                    subjectDiv.innerHTML = `
-                        <div class="subject-header">
-                            <span>${subjectName}</span>
-                            <span>${accuracy.toFixed(1)}% Accuracy</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${accuracy}%"></div>
-                        </div>
-                        <div style="font-size: 0.8rem; text-align: right; margin-top: 0.25rem;">
-                           C: ${data.correct}, I: ${data.incorrect}, U: ${data.unanswered}
-                        </div>
-                    `;
-                    container.appendChild(subjectDiv);
+                    container.innerHTML += `
+                        <div class="subject-item">
+                            <div class="subject-header">
+                                <span>${subjectName}</span>
+                                <span>${accuracy.toFixed(1)}% Acc</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-fill" style="width: ${accuracy}%"></div></div>
+                        </div>`;
                 }
             }
             
@@ -274,16 +352,11 @@
                 const timeTaken = this.results.timeTaken || 0;
                 const attemptedCount = this.results.correct + this.results.incorrect;
                 const avgTime = attemptedCount > 0 ? (timeTaken / attemptedCount).toFixed(0) : 0;
-
-                const formatTime = (seconds) => {
-                    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-                    const s = (seconds % 60).toString().padStart(2, '0');
-                    return `${m}m ${s}s`;
-                };
+                const formatTime = (s) => `${Math.floor(s/60)}m ${s%60}s`;
 
                 container.innerHTML = `
                     <div class="time-item"><span class="time-label">Time Taken</span><span class="time-value">${formatTime(timeTaken)}</span></div>
-                    <div class="time-item"><span class="time-label">Total Time</span><span class="time-value">${this.results.testData.duration}m 00s</span></div>
+                    <div class="time-item"><span class="time-label">Total Time</span><span class="time-value">${this.results.testData.duration}m 0s</span></div>
                     <div class="time-item"><span class="time-label">Avg. Time/Ques</span><span class="time-value">${avgTime}s</span></div>
                 `;
             }
@@ -295,41 +368,37 @@
                 this.results.testData.questions_data.forEach((q, index) => {
                     const userAnswer = this.results.answers[index];
                     const isCorrect = userAnswer === q.correctAnswer;
-                    let status = 'unanswered';
-                    if (userAnswer !== undefined) status = isCorrect ? 'correct' : 'incorrect';
+                    let status = (userAnswer !== undefined) ? (isCorrect ? 'correct' : 'incorrect') : 'unanswered';
                     
                     if (filter !== 'all' && filter !== status) return;
 
-                    const questionEl = document.createElement('div');
-                    questionEl.className = 'review-question';
-                    questionEl.dataset.status = status;
-
-                    questionEl.innerHTML = `
-                        <div class="review-question-header">
-                            <span><b>Q${index + 1}:</b> (${q.subject})</span>
-                            <div>
-                                <span class="review-question-topic">${q.topic || 'General'}</span>
-                                <span class="status-tag status-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                    container.innerHTML += `
+                        <div class="review-question" data-status="${status}">
+                            <div class="review-question-header">
+                                <span><b>Q${index + 1}:</b> (${q.subject})</span>
+                                <div>
+                                    <span class="review-question-topic">${q.topic || 'General'}</span>
+                                    <span class="status-tag status-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                                </div>
+                            </div>
+                            <p>${q.questionText}</p>
+                            <div class="review-options">
+                                ${q.options.map((option, optIndex) => `
+                                    <div class="option 
+                                        ${optIndex === q.correctAnswer ? 'correct-answer' : ''}
+                                        ${optIndex === userAnswer && !isCorrect ? 'incorrect-choice' : ''}
+                                    ">
+                                        <span class="option-label">${String.fromCharCode(65 + optIndex)}.</span>
+                                        <span>${option}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="solution">
+                                <h4>Solution:</h4>
+                                <p>${q.solution || 'No detailed solution available.'}</p>
                             </div>
                         </div>
-                        <p>${q.questionText}</p>
-                        <div class="review-options">
-                            ${q.options.map((option, optIndex) => `
-                                <div class="option 
-                                    ${optIndex === q.correctAnswer ? 'correct-answer' : ''}
-                                    ${optIndex === userAnswer && !isCorrect ? 'incorrect-choice' : ''}
-                                ">
-                                    <span class="option-label">${String.fromCharCode(65 + optIndex)}.</span>
-                                    <span>${option}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="solution">
-                            <h4>Solution:</h4>
-                            <p>${q.solution || 'No detailed solution available.'}</p>
-                        </div>
                     `;
-                    container.appendChild(questionEl);
                 });
             }
             
