@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tips & Revision - ExamAce</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #374151; background-color: #f9fafb; }
+        :root {
+            --primary: #15803d; --primary-foreground: #ffffff; --card: #ffffff;
+            --border: #e5e7eb; --muted-foreground: #6b7280; --foreground: #374151; --muted: #f3f4f6;
+        }
+
+        .navbar { background-color: var(--card); border-bottom: 1px solid var(--border); padding: 0 1rem; position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 4rem; }
+        .nav-brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-link { color: var(--foreground); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary); }
+        .nav-user { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar { width: 2rem; height: 2rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .logout-btn { background: none; border: 1px solid var(--border); color: var(--foreground); padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; }
+
+        /* Mobile menu */
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.75rem; cursor: pointer; color: var(--foreground); }
+        .mobile-menu { display: none; background-color: var(--card); border-top: 1px solid var(--border); padding: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .mobile-menu.active { display: block; }
+        .mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .mobile-nav-links .nav-link { display: block; padding: 0.5rem 0; }
+        
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        .page-header { text-align: center; margin-bottom: 1.5rem; }
+        .page-title { font-size: 2.25rem; font-weight: 700; color: var(--primary); }
+        
+        .main-tabs-nav { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; }
+        .main-tab-btn { padding: 0.75rem 2rem; border: 2px solid var(--border); background: var(--card); font-size: 1.1rem; font-weight: 600; cursor: pointer; color: var(--muted-foreground); border-radius: 999px; transition: all 0.2s; }
+        .main-tab-btn.active { color: var(--primary-foreground); background-color: var(--primary); border-color: var(--primary); }
+        .main-tab-content { display: none; }
+        .main-tab-content.active { display: block; }
+        
+        .subject-tabs-nav { display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border); margin-bottom: 2rem; overflow-x: auto; }
+        .subject-tab-btn { padding: 0.75rem 1.5rem; border: none; background: none; font-size: 1rem; font-weight: 600; cursor: pointer; color: var(--muted-foreground); border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+        .subject-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .subject-tab-content { display: none; }
+        .subject-tab-content.active { display: block; }
+        
+        .chapter-list { display: grid; gap: 1.5rem; }
+        .chapter-card { background-color: var(--card); border: 1px solid var(--border); border-radius: 0.5rem; }
+        .chapter-card summary { font-size: 1.125rem; font-weight: 600; padding: 1rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .chapter-card summary::after { content: '+'; font-size: 1.5rem; transition: transform 0.2s; }
+        .chapter-card[open] summary::after { transform: rotate(45deg); }
+        .chapter-content { padding: 0 1.5rem 1.5rem; border-top: 1px solid var(--border); }
+        .chapter-content p, .chapter-content ul { margin-top: 1rem; }
+        .chapter-content ul { list-style-position: inside; }
+        .chapter-content code { background-color: var(--muted); padding: 0.1rem 0.4rem; border-radius: 0.25rem; font-family: 'Courier New', Courier, monospace; }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-user { display: none; }
+            .mobile-menu-btn { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="dashboard.html" class="nav-brand">ExamAce</a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link active">Tips & Revision</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <button class="logout-btn" id="logout-btn">Logout</button>
+            </div>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">&#9776;</button>
+        </div>
+        <div class="mobile-menu" id="mobile-menu">
+            <ul class="mobile-nav-links">
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
+                <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link active">Tips & Revision</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
+                <li><a href="#" id="mobile-logout-btn" class="nav-link">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="main-container">
+        <header class="page-header">
+            <h1 class="page-title">Study Materials</h1>
+        </header>
+        <nav class="main-tabs-nav">
+            <button class="main-tab-btn active" data-main-tab="revision">Quick Revision</button>
+            <button class="main-tab-btn" data-main-tab="tricks">Tips & Tricks</button>
+        </nav>
+
+        <div id="revision" class="main-tab-content active">
+            <nav class="subject-tabs-nav">
+                <button class="subject-tab-btn active" data-subject-tab="physics-rev">Physics</button>
+                <button class="subject-tab-btn" data-subject-tab="chemistry-rev">Chemistry</button>
+                <button class="subject-tab-btn" data-subject-tab="maths-rev">Mathematics</button>
+                <button class="subject-tab-btn" data-subject-tab="biology-rev">Biology</button>
+            </nav>
+            <section id="physics-rev" class="subject-tab-content active">
+                <div class="chapter-list">
+                    <details class="chapter-card"><summary>Kinematics Formulas</summary><div class="chapter-content"><ul><li><code>v = u + at</code></li><li><code>s = ut + (1/2)at^2</code></li><li><code>v^2 = u^2 + 2as</code></li></ul></div></details>
+                    <details class="chapter-card"><summary>Thermodynamics Laws</summary><div class="chapter-content"><p><strong>First Law:</strong> ΔQ = ΔU + ΔW.<br><strong>Second Law:</strong> Entropy of an isolated system always increases.</p></div></details>
+                </div>
+            </section>
+            <section id="chemistry-rev" class="subject-tab-content"><div class="chapter-list"><details class="chapter-card"><summary>Hybridization Formula</summary><div class="chapter-content"><p>H = 1/2 [V + M - C + A]</p></div></details></div></section>
+            <section id="maths-rev" class="subject-tab-content"><p>Maths Revision Content Here...</p></section>
+            <section id="biology-rev" class="subject-tab-content"><p>Biology Revision Content Here...</p></section>
+        </div>
+
+        <div id="tricks" class="main-tab-content">
+            <nav class="subject-tabs-nav">
+                <button class="subject-tab-btn active" data-subject-tab="physics-tips">Physics</button>
+                <button class="subject-tab-btn" data-subject-tab="chemistry-tips">Chemistry</button>
+                <button class="subject-tab-btn" data-subject-tab="maths-tips">Mathematics</button>
+                <button class="subject-tab-btn" data-subject-tab="biology-tips">Biology</button>
+            </nav>
+            <section id="physics-tips" class="subject-tab-content active">
+                <div class="chapter-list">
+                    <details class="chapter-card"><summary>Solving Projectile Motion</summary><div class="chapter-content"><p>Trick: Treat horizontal and vertical motion independently. Horizontal velocity is constant.</p></div></details>
+                    <details class="chapter-card"><summary>Free Body Diagrams (FBD)</summary><div class="chapter-content"><p>Tip: Isolate each body and draw only the forces acting ON it, not the forces it exerts.</p></div></details>
+                </div>
+            </section>
+            <section id="chemistry-tips" class="subject-tab-content"><div class="chapter-list"><details class="chapter-card"><summary>Organic Chemistry Reactions</summary><div class="chapter-content"><p>Trick: Focus on the mechanism and roles of reagents, not just memorizing reactions.</p></div></details></div></section>
+            <section id="maths-tips" class="subject-tab-content"><p>Maths Tips Content Here...</p></section>
+            <section id="biology-tips" class="subject-tab-content"><p>Biology Tips Content Here...</p></section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainTabButtons = document.querySelectorAll('.main-tab-btn');
+            const mainTabContents = document.querySelectorAll('.main-tab-content');
+            mainTabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    mainTabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    mainTabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(button.dataset.mainTab).classList.add('active');
+                });
+            });
+
+            const subjectTabContainers = document.querySelectorAll('.main-tab-content');
+            subjectTabContainers.forEach(container => {
+                const subjectTabButtons = container.querySelectorAll('.subject-tab-btn');
+                const subjectTabContents = container.querySelectorAll('.subject-tab-content');
+                subjectTabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        subjectTabButtons.forEach(btn => btn.classList.remove('active'));
+                        subjectTabContents.forEach(content => content.classList.remove('active'));
+                        button.classList.add('active');
+                        container.querySelector(`#${button.dataset.subjectTab}`).classList.add('active');
+                    });
+                });
+            });
+        });
+    </script>
+     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyCQ34ZAWWCMuaQ01fvX0sI-YdklK0mJ5aw",
+          authDomain: "testseries-38752.firebaseapp.com",
+          projectId: "testseries-38752",
+          storageBucket: "testseries-38752.firebasestorage.app",
+          messagingSenderId: "519384534407",
+          appId: "1:519384534407:web:201265a9d703708334d722"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                const userName = user.displayName || user.email || 'User';
+                document.getElementById('user-avatar').textContent = userName.charAt(0).toUpperCase();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        const handleLogout = () => signOut(auth).catch(e => console.error(e));
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.getElementById('mobile-logout-btn').addEventListener('click', handleLogout);
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
+

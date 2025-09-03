@@ -29,6 +29,7 @@
             --muted: #f3f4f6;
             --muted-foreground: #6b7280;
             --border: #e5e7eb;
+            --foreground: #374151;
         }
 
         /* Navigation styles */
@@ -121,7 +122,7 @@
         }
         
         #loading-state { text-align: center; padding: 4rem; }
-
+        
         .welcome-section {
             margin-bottom: 2rem;
         }
@@ -146,38 +147,63 @@
         }
         
         .card-title {
-            font-size: 1.5rem; /* Larger title */
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1rem;
+            margin-bottom: 1rem;
         }
-        
+
         /* Test list styles */
         .test-list { list-style: none; }
         .test-item {
-            display: grid; /* Using grid for better alignment */
-            grid-template-columns: 1fr auto;
+            display: grid;
+            grid-template-columns: 1fr;
             align-items: center;
             padding: 1rem;
             border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            transition: background-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 0.5rem;
             border: 1px solid var(--border);
-        }
-        .test-item:hover { 
-            background-color: var(--muted); 
-            cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
         .test-item:last-child { margin-bottom: 0; }
         
-        .test-info h4 { font-weight: 600; font-size: 1.125rem; margin-bottom: 0.25rem; }
+        .test-info h4 { font-weight: 600; font-size: 1.125rem; }
         .test-meta { color: var(--muted-foreground); font-size: 0.875rem; display: flex; gap: 1rem; }
         
         .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; }
         .btn-primary { background-color: var(--primary); color: var(--primary-foreground); }
         .btn-primary:hover { background-color: #166534; }
+        
+        /* New informational sections */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+        .info-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+        .info-card p {
+            color: var(--muted-foreground);
+            margin-bottom: 1rem;
+        }
+        .info-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
         
         /* Responsive design */
         @media (max-width: 768px) {
@@ -197,6 +223,9 @@
                 <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
                 <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link">Tips & Shortcuts</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
             </ul>
             <div class="nav-user">
                 <div class="user-avatar" id="user-avatar">U</div>
@@ -209,6 +238,9 @@
                 <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
                 <li><a href="test-selection.html" class="nav-link">Mock Tests</a></li>
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                <li><a href="resources.html" class="nav-link">Resources</a></li>
+                <li><a href="tips.html" class="nav-link">Tips & Shortcuts</a></li>
+                <li><a href="profile.html" class="nav-link">Profile</a></li>
             </ul>
         </div>
     </nav>
@@ -218,15 +250,94 @@
 
         <div id="dashboard-content" style="display:none;">
             <section class="welcome-section">
-                <h1 class="welcome-title" id="welcome-title">Welcome back!</h1>
-                <p class="welcome-subtitle">Select a test from the list below to get started.</p>
+                <h1 class="welcome-title" id="welcome-title">Welcome to ExamAce!</h1>
+                <p class="welcome-subtitle">Your central hub for exam preparation.</p>
             </section>
 
             <section class="card">
                 <h2 class="card-title">Available Mock Tests</h2>
                 <ul class="test-list" id="available-tests-list">
-                    <!-- Populated by script -->
+                    <!-- Hardcoded test items -->
+                    <li class="test-item">
+                        <div class="test-info">
+                            <h4>JEE Mock Test 1</h4>
+                            <div class="test-meta">
+                                <span>90 Questions</span>
+                                <span>&bull;</span>
+                                <span>180 mins</span>
+                                <span>&bull;</span>
+                                <span>360 Marks</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="test-item">
+                        <div class="test-info">
+                            <h4>NEET Mock Test 2</h4>
+                            <div class="test-meta">
+                                <span>180 Questions</span>
+                                <span>&bull;</span>
+                                <span>180 mins</span>
+                                <span>&bull;</span>
+                                <span>720 Marks</span>
+                            </div>
+                        </div>
+                    </li>
+                     <li class="test-item">
+                        <div class="test-info">
+                            <h4>KCET Mock Test 3</h4>
+                            <div class="test-meta">
+                                <span>60 Questions</span>
+                                <span>&bull;</span>
+                                <span>80 mins</span>
+                                <span>&bull;</span>
+                                <span>60 Marks</span>
+                            </div>
+                        </div>
+                    </li>
+                     <li class="test-item">
+                        <div class="test-info">
+                            <h4>JEE Mock Test 4</h4>
+                            <div class="test-meta">
+                                <span>90 Questions</span>
+                                <span>&bull;</span>
+                                <span>180 mins</span>
+                                <span>&bull;</span>
+                                <span>360 Marks</span>
+                            </div>
+                        </div>
+                    </li>
+                     <li class="test-item">
+                        <div class="test-info">
+                            <h4>NEET Mock Test 5</h4>
+                            <div class="test-meta">
+                                <span>180 Questions</span>
+                                <span>&bull;</span>
+                                <span>180 mins</span>
+                                <span>&bull;</span>
+                                <span>720 Marks</span>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
+                <a href="test-selection.html" class="btn btn-primary" style="margin-top: 1.5rem; display: block;">See all tests</a>
+            </section>
+
+            <section class="info-grid">
+                <div class="info-card">
+                    <h3>Track Your Progress</h3>
+                    <p>Go to the analytics page to view your performance over time, identify weak areas, and understand your test-taking trends.</p>
+                    <a href="analytics.html">Go to Analytics →</a>
+                </div>
+                <div class="info-card">
+                    <h3>Explore Study Resources</h3>
+                    <p>Find a collection of previous year's question papers and other study materials to supplement your preparation.</p>
+                    <a href="resources.html">Go to Resources →</a>
+                </div>
+                <div class="info-card">
+                    <h3>Get Tips & Tricks</h3>
+                    <p>Find quick tips, revision notes, and shortcuts to help you solve problems faster and improve your overall speed.</p>
+                    <a href="tips.html">Go to Tips & Shortcuts →</a>
+                </div>
             </section>
         </div>
     </main>
@@ -234,7 +345,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Use the same Firebase config from your other pages
         const firebaseConfig = {
@@ -261,19 +372,12 @@
 
         async function loadDashboardData(user) {
             try {
-                // Fetch user's name and the list of tests concurrently
-                const [userDoc, testsSnapshot] = await Promise.all([
-                    getDoc(doc(db, "users", user.uid)),
-                    getDocs(query(collection(db, "tests")))
-                ]);
+                // Fetch user's name
+                const userDoc = await getDoc(doc(db, "users", user.uid));
 
                 // User's name for welcome message
                 const userName = user.displayName || user.email || 'User';
                 updateWelcomeMessage(userName);
-
-                // Process and display available tests
-                const availableTests = testsSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateAvailableTests(availableTests);
 
                 // Show content
                 document.getElementById('loading-state').style.display = 'none';
@@ -288,44 +392,8 @@
         // --- UI UPDATE FUNCTIONS ---
 
         function updateWelcomeMessage(name) {
-            document.getElementById('welcome-title').textContent = `Welcome back, ${name.split('@')[0]}!`;
+            document.getElementById('welcome-title').textContent = `Welcome, ${name.split('@')[0]}!`;
             document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-        }
-
-        function updateAvailableTests(tests) {
-            const container = document.getElementById('available-tests-list');
-            if (tests.length === 0) {
-                container.innerHTML = '<li><p style="padding: 1rem;">No new tests are available at the moment. Please check back later.</p></li>';
-                return;
-            }
-
-            container.innerHTML = tests.map(test => `
-                 <li class="test-item" data-testid="${test.id}">
-                    <div class="test-info">
-                        <h4>${test.title}</h4>
-                        <div class="test-meta">
-                            <span>${test.questions_data.length} Questions</span>
-                            <span>&bull;</span>
-                            <span>${test.duration} mins</span>
-                             <span>&bull;</span>
-                            <span>${test.marks} Marks</span>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary">Start Test</button>
-                </li>
-            `).join('');
-            
-            // Add click handlers to each test item (the entire li) to start a test
-            container.querySelectorAll('.test-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const testId = item.dataset.testid;
-                    const testData = tests.find(t => t.id === testId);
-                    if (testData) {
-                        sessionStorage.setItem('current_test', JSON.stringify(testData));
-                        window.location.href = 'test-instruction.html';
-                    }
-                });
-            });
         }
 
         // --- EVENT LISTENERS ---
@@ -339,4 +407,3 @@
     </script>
 </body>
 </html>
-
