@@ -220,8 +220,7 @@
 
                 this.filteredTests = this.allTests.filter(test => {
                     const examMatch = examType === 'all' || test.type === examType;
-                    const subjectMatch = subject === 'all' || test.subjects.includes(subject);
-                    
+                    const subjectMatch = subject === 'all' || (test.subjects.length === 1 && test.subjects[0] === subject);
                     let durationMatch = true;
                     if (duration !== 'all') {
                         if (duration === 'short') durationMatch = test.duration < 60;
