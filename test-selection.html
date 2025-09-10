@@ -76,7 +76,7 @@
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
                 <li><a href="resources.html" class="nav-link">Resources</a></li>
                 <li><a href="tips.html" class="nav-link">Tips & Revision</a></li>
-                <li><a href="profile.html" class="nav-link">Profile</a></li>
+                
             </ul>
             <div class="nav-user">
                 <div class="user-avatar" id="user-avatar">U</div>
@@ -91,7 +91,7 @@
                 <li><a href="analytics.html" class="nav-link">Analytics</a></li>
                 <li><a href="resources.html" class="nav-link">Resources</a></li>
                 <li><a href="tips.html" class="nav-link">Tips & Revision</a></li>
-                <li><a href="profile.html" class="nav-link">Profile</a></li>
+                
                 <li><a href="#" id="mobile-logout-btn" class="nav-link">Logout</a></li>
             </ul>
         </div>
@@ -124,15 +124,7 @@
                         <option value="Biology">Biology</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="difficulty-filter">Difficulty</label>
-                    <select id="difficulty-filter" class="filter-select">
-                        <option value="all">All Levels</option>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </div>
+                
                 <div class="filter-group">
                     <label for="duration-filter">Duration</label>
                     <select id="duration-filter" class="filter-select">
@@ -210,7 +202,6 @@
             initializeEventListeners() {
                 document.getElementById('exam-filter').addEventListener('change', () => this.applyFilters());
                 document.getElementById('subject-filter').addEventListener('change', () => this.applyFilters());
-                document.getElementById('difficulty-filter').addEventListener('change', () => this.applyFilters());
                 document.getElementById('duration-filter').addEventListener('change', () => this.applyFilters());
                 
                 const handleLogout = () => signOut(auth).catch(e => console.error(e));
@@ -225,13 +216,11 @@
             applyFilters() {
                 const examType = document.getElementById('exam-filter').value;
                 const subject = document.getElementById('subject-filter').value;
-                const difficulty = document.getElementById('difficulty-filter').value;
                 const duration = document.getElementById('duration-filter').value;
 
                 this.filteredTests = this.allTests.filter(test => {
                     const examMatch = examType === 'all' || test.type === examType;
                     const subjectMatch = subject === 'all' || test.subjects.includes(subject);
-                    const difficultyMatch = difficulty === 'all' || test.difficulty === difficulty;
                     
                     let durationMatch = true;
                     if (duration !== 'all') {
@@ -240,7 +229,7 @@
                         else if (duration === 'long') durationMatch = test.duration > 120;
                     }
                     
-                    return examMatch && subjectMatch && difficultyMatch && durationMatch;
+                    return examMatch && subjectMatch && durationMatch;
                 });
 
                 this.renderTests();
@@ -301,4 +290,3 @@
     </script>
 </body>
 </html>
-
